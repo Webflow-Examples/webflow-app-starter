@@ -1,0 +1,18 @@
+{
+  "name": "webflow-app-starter",
+  "version": "1.0.0",
+  "main": "app/server.js",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config app/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.2",
+    "fastify": "^4.6.0",
+    "level": "^8.0.0",
+    "nodemon": "^2.0.20",
+    "simple-oauth2": "^4.3.0",
+    "webflow-api": "^0.8.1"
+  }
+}
