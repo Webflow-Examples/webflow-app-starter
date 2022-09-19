@@ -1,5 +1,10 @@
 {
   "name": "webflow-app-starter",
+  "description": "A boilerplate to quicly get started with Webflow Apps",
+  "author": {
+    "name": "John Agan",
+    "email": "john.agan@webflow.com"
+  },
   "version": "1.0.0",
   "main": "app/server.js",
   "type": "module",
