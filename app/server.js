@@ -1,8 +1,6 @@
 import Webflow from "webflow-api";
 import App from "./webflow.js";
 import Fastify from "fastify";
-import pinoInspector from "pino-inspector";
-
 
 // Load environment variables from .env file
 const { CLIENT_ID, CLIENT_SECRET, SERVER_HOST, PORT } = process.env;
