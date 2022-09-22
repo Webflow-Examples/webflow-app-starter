@@ -21,7 +21,7 @@ server.post("/webhook", async (req, reply) => {
   const request_timestamp = req.headers["x-webflow-timestamp"];
 
   // Validate the request signature to ensure this request came from Webflow
-  if (app.validateRequestSignature(request_signature, request_timestamp, req.body)){
+  if (app.validateRequestSignature(request_signature, request_timestamp, req.body, CLIENT_SECRET)){
     // Get site ID from webhook payload
     const { site } = req.body;
 

@@ -31,19 +31,19 @@ class App {
     });
 
     // Webhook Request Validation
-    this.validateRequestSignature = function(request_signature, request_timestamp, request_body){
+    this.validateRequestSignature = function(signature, timestamp, body_json, consumer_secret){
       // Concatinate the request timestamp header and request body
-      const content = Number(request_timestamp) + ":" + JSON.stringify(request_body);
+      const content = Number(timestamp) + ":" + JSON.stringify(body_json);
 
       // Generate an HMAC signature from the timestamp and body
       const hmac = crypto
-        .createHmac('sha256', CLIENT_SECRET)
+        .createHmac('sha256', consumer_secret)
         .update(content)
         .digest('hex');
 
       // Create a Buffers from the generated signature and signature header
       const hmac_buffer = Buffer.from(hmac);
-      const signature_buffer = Buffer.from(request_signature);
+      const signature_buffer = Buffer.from(signature);
 
       // Compare generated signature with signature header checksum
       return crypto.timingSafeEqual(hmac_buffer, signature_buffer);
