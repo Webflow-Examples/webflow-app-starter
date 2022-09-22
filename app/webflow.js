@@ -3,8 +3,6 @@ import crypto from "crypto";
 import { AuthorizationCode } from "simple-oauth2";
 import { Level } from "level";
 
-const {CLIENT_SECRET} = process.env;
-
 class App {
   /**
    * @param {string} clientId The OAuth client ID for the app
