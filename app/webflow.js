@@ -32,6 +32,11 @@ class App {
 
     // Webhook Request Validation
     this.validateRequestSignature = function(signature, timestamp, body_json, consumer_secret){
+      // Return false if timestamp is more than 5 minutes old
+      if (((Date.now() - Number(timestamp)) / 60000) > 5){
+        return false
+      };
+
       // Concatinate the request timestamp header and request body
       const content = Number(timestamp) + ":" + JSON.stringify(body_json);
 
