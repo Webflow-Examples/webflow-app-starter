@@ -1,6 +1,8 @@
 import Webflow from "webflow-api";
 import App from "./webflow.js";
 import Fastify from "fastify";
+import pinoInspector from "pino-inspector";
+
 
 // Load environment variables from .env file
 const { CLIENT_ID, CLIENT_SECRET, SERVER_HOST, PORT } = process.env;
@@ -14,21 +16,32 @@ const server = Fastify({
 
 // Response to Webhooks
 server.post("/webhook", async (req, reply) => {
-  // Get site ID from webhook payload
-  const { site } = req.body;
+  // Get signature and timestamp headers for validation
+  const request_signature = req.headers["x-webflow-signature"];
+  const request_timestamp = req.headers["x-webflow-timestamp"];
 
-  // Get the site's access token
-  const token = await app.data.get(site);
+  // Validate the request signature to ensure this request came from Webflow
+  if (app.validateRequestSignature(request_signature, request_timestamp, req.body)){
+    // Get site ID from webhook payload
+    const { site } = req.body;
 
-  // Initialize a new Webflow client
-  const webflow = new Webflow({ token });
+    // Get the site's access token
+    const token = await app.data.get(site);
 
-  // Make calls to the Webflow API
-  const user = await webflow.get("/user");
-  // Do other stuff with the API...
+    // Initialize a new Webflow client
+    const webflow = new Webflow({ token });
 
-  // Return a 200 response to Webflow
-  reply.statusCode = 200;
+    // Make calls to the Webflow API
+    const user = await webflow.get("/user");
+
+    // Do other stuff with the API...
+
+    // Return a 200 response to Webflow
+    reply.statusCode = 200;
+  } else {
+    // Return a 403 response to Webflow if the request doesn't pass validation
+    reply.statusCode = 403;
+  }
 });
 
 // Install the App

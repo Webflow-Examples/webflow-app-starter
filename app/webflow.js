@@ -1,6 +1,9 @@
-import { AuthorizationCode } from "simple-oauth2";
 import Client from "webflow-api";
+import crypto from "crypto";
+import { AuthorizationCode } from "simple-oauth2";
 import { Level } from "level";
+
+const {CLIENT_SECRET} = process.env;
 
 class App {
   /**
@@ -26,6 +29,25 @@ class App {
         authorizeHost: "https://webflow.com",
       },
     });
+
+    // Webhook Request Validation
+    this.validateRequestSignature = function(request_signature, request_timestamp, request_body){
+      // Concatinate the request timestamp header and request body
+      const content = Number(request_timestamp) + ":" + JSON.stringify(request_body);
+
+      // Generate an HMAC signature from the timestamp and body
+      const hmac = crypto
+        .createHmac('sha256', CLIENT_SECRET)
+        .update(content)
+        .digest('hex');
+
+      // Create a Buffers from the generated signature and signature header
+      const hmac_buffer = Buffer.from(hmac);
+      const signature_buffer = Buffer.from(request_signature);
+
+      // Compare generated signature with signature header checksum
+      return crypto.timingSafeEqual(hmac_buffer, signature_buffer);
+    }
   }
 
   /**
