@@ -1,5 +1,6 @@
-import { AuthorizationCode } from "simple-oauth2";
 import Client from "webflow-api";
+import crypto from "crypto";
+import { AuthorizationCode } from "simple-oauth2";
 import { Level } from "level";
 
 class App {
@@ -26,6 +27,30 @@ class App {
         authorizeHost: "https://webflow.com",
       },
     });
+
+    // Webhook Request Validation
+    this.validateRequestSignature = function(signature, timestamp, body_json, consumer_secret){
+      // Return false if timestamp is more than 5 minutes old
+      if (((Date.now() - Number(timestamp)) / 60000) > 5){
+        return false
+      };
+
+      // Concatinate the request timestamp header and request body
+      const content = Number(timestamp) + ":" + JSON.stringify(body_json);
+
+      // Generate an HMAC signature from the timestamp and body
+      const hmac = crypto
+        .createHmac('sha256', consumer_secret)
+        .update(content)
+        .digest('hex');
+
+      // Create a Buffers from the generated signature and signature header
+      const hmac_buffer = Buffer.from(hmac);
+      const signature_buffer = Buffer.from(signature);
+
+      // Compare generated signature with signature header checksum
+      return crypto.timingSafeEqual(hmac_buffer, signature_buffer);
+    }
   }
 
   /**
