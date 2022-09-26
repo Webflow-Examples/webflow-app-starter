@@ -101,7 +101,7 @@ class App {
     const ellapsedTime = Date.now() - timestamp;
     if (ellapsedTime > 60 * 5) return false;
 
-    // compare signature
+    // compare signatures
     const hmac = createHmac("sha256", this.clientSecret);
     return signature === hmac.update(content).digest("hex");
   }
