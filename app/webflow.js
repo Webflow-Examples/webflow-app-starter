@@ -1,4 +1,5 @@
 import { AuthorizationCode } from "simple-oauth2";
+import { createHmac } from "crypto";
 import Client from "webflow-api";
 import { Level } from "level";
 
@@ -8,6 +9,8 @@ class App {
    * @param {string} clientSecret The OAuth client secret for the app
    */
   constructor(clientId, clientSecret) {
+    this.clientSecret = clientSecret;
+
     // KVS for app data
     this.data = new Level("data");
 
@@ -80,6 +83,27 @@ class App {
    */
   installUrl(params = {}) {
     return this.oauth.authorizeURL(params);
+  }
+
+  /**
+   * Verify the an incoming request is from Webflow
+   *
+   * @param {object} headers An object containing the request headers
+   * @param {object} body The request body
+   * @returns The results of the HMAC verification
+   */
+  verifyRequest(headers, body) {
+    const signature = headers["x-webflow-signature"];
+    const timestamp = Number(headers["x-webflow-timestamp"]);
+    const content = timestamp + ":" + JSON.stringify(body);
+
+    // timestamp shouldn't be older than 5 minutes
+    const ellapsedTime = Date.now() - timestamp;
+    if (ellapsedTime > 60 * 5) return false;
+
+    // compare signature
+    const hmac = createHmac("sha256", this.clientSecret);
+    return signature === hmac.update(content).digest("hex");
   }
 }
 

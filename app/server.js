@@ -14,6 +14,10 @@ const server = Fastify({
 
 // Response to Webhooks
 server.post("/webhook", async (req, reply) => {
+  // verify the webhook signature
+  const valid = app.verifyRequest(req.headers, req.body);
+  if (!valid) return reply.status(401).send("Invalid request");
+
   // Get site ID from webhook payload
   const { site } = req.body;
 
