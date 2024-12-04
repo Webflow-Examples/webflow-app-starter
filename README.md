@@ -1,3 +1,6 @@
+>[!CAUTION]
+>This example is deprecated. Please see the [latest version that uses the v2 API.](https://github.com/Webflow-Examples/webflow-app-starter-v2)
+
 # Webflow App Starter
 
 Use this starter to spin-up a Webflow App server, enable OAuth installation, create webhooks on sites, and respond to those webhook events.
